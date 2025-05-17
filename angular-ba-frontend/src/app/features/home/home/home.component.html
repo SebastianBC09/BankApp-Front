@@ -1,0 +1,112 @@
+<div class="bank-container">
+  <div class="hero-section" [ngClass]="{'authenticated': auth.isAuthenticated$ | async}">
+    <!-- Estado no autenticado -->
+    <div *ngIf="!(auth.isAuthenticated$ | async)" class="login-container" [@fadeIn]>
+      <div class="welcome-content">
+        <h1 class="main-title">Bienvenido a <span class="brand-text">BankApp</span></h1>
+        <p class="subtitle">Tu aliado financiero al alcance de tu mano</p>
+
+        <div class="features">
+          <div class="feature-item">
+            <div class="feature-icon">
+              <i class="fas fa-shield-alt"></i>
+            </div>
+            <div class="feature-text">
+              <h3>Seguridad Total</h3>
+              <p>Tus datos siempre protegidos</p>
+            </div>
+          </div>
+
+          <div class="feature-item">
+            <div class="feature-icon">
+              <i class="fas fa-bolt"></i>
+            </div>
+            <div class="feature-text">
+              <h3>Transacciones Rápidas</h3>
+              <p>Operaciones en segundos</p>
+            </div>
+          </div>
+
+          <div class="feature-item">
+            <div class="feature-icon">
+              <i class="fas fa-chart-line"></i>
+            </div>
+            <div class="feature-text">
+              <h3>Control Financiero</h3>
+              <p>Gestiona tus finanzas fácilmente</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="cta-section">
+          <button class="login-button primary-btn" (click)="login()">
+            Iniciar Sesión
+          </button>
+          <button class="register-button secondary-btn" (click)="register()">
+            Crear Cuenta
+          </button>
+        </div>
+      </div>
+
+      <div class="image-container">
+        <img src="assets/banking-illustration.svg" alt="BankApp Ilustración" class="hero-image">
+      </div>
+    </div>
+
+    <!-- Estado autenticado -->
+    <div *ngIf="auth.isAuthenticated$ | async" class="dashboard-preview" [@fadeIn]>
+      <div class="user-welcome">
+        <div class="profile-section">
+          <div class="avatar-container">
+            <img *ngIf="userProfile?.picture" [src]="userProfile.picture" alt="Avatar" class="avatar-image">
+            <div *ngIf="!userProfile?.picture" class="avatar-placeholder">
+              {{ getUserInitials() }}
+            </div>
+          </div>
+          <div class="greeting-text">
+            <h2>¡Hola, <span class="user-name">{{ userProfile?.name || 'Usuario' }}</span>!</h2>
+            <p class="last-login">Último acceso: {{ lastLogin | date:'medium' }}</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="quick-actions">
+        <h3 class="section-title">Acciones Rápidas</h3>
+        <div class="cards-container">
+          <div class="action-card" *ngFor="let action of quickActions" (click)="navigateTo(action.route)">
+            <div class="card-icon" [ngClass]="action.iconClass">
+              <i class="fas" [ngClass]="action.icon"></i>
+            </div>
+            <div class="card-text">
+              <h4>{{ action.title }}</h4>
+              <p>{{ action.description }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="financial-summary">
+        <h3 class="section-title">Resumen Financiero</h3>
+        <div class="balance-cards">
+          <div class="balance-card main-account">
+            <div class="balance-info">
+              <span class="balance-label">Saldo Principal</span>
+              <span class="balance-amount">{{ mainAccountBalance | currency:'USD':'symbol':'1.2-2' }}</span>
+            </div>
+            <div class="account-number">**** {{ lastFourDigits }}</div>
+          </div>
+
+          <div class="balance-card savings">
+            <div class="balance-info">
+              <span class="balance-label">Ahorros</span>
+              <span class="balance-amount">{{ savingsBalance | currency:'USD':'symbol':'1.2-2' }}</span>
+            </div>
+            <div class="view-details">
+              <a (click)="viewSavingsDetails()">Ver detalles</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

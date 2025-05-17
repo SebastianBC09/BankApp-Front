@@ -1,0 +1,43 @@
+<div class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+  <h2 class="text-2xl font-bold mb-6 text-gray-800">Perfil de Usuario</h2>
+
+  <div *ngIf="auth.user$ | async as auth0User" class="mb-6">
+    <h3 class="text-xl font-semibold text-gray-700 mb-2">Datos de Auth0:</h3>
+    <div class="flex items-center mb-2" *ngIf="auth0User.picture">
+      <img [src]="auth0User.picture" alt="Foto de {{ auth0User.name }}" class="rounded-full w-16 h-16 mr-4">
+    </div>
+    <p><strong>Nombre:</strong> {{ auth0User.name }}</p>
+    <p><strong>Email:</strong> {{ auth0User.email }}</p>
+    <p><strong>Sub (Auth0 ID):</strong> {{ auth0User.sub }}</p>
+    <details class="mt-2">
+      <summary class="cursor-pointer text-blue-500">Ver todos los datos de Auth0 (JSON)</summary>
+      <pre class="bg-gray-100 p-2 rounded mt-1 text-xs overflow-x-auto"><code>{{ auth0User | json }}</code></pre>
+    </details>
+  </div>
+  <hr class="my-6">
+
+  <div>
+    <h3 class="text-xl font-semibold text-gray-700 mb-2">Datos del Backend (/api/test/me):</h3>
+    <div *ngIf="isLoadingBackendUser" class="text-blue-500">
+      Cargando datos del backend...
+    </div>
+
+    <div *ngIf="backendUserError" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-3" role="alert">
+      <strong class="font-bold">Error:</strong>
+      <span class="block sm:inline">{{ backendUserError.message || 'No se pudieron cargar los datos del backend.'}}</span>
+      <pre class="text-xs mt-2">{{ backendUserError | json }}</pre>
+    </div>
+
+    <div *ngIf="backendUser$ | async as backendInfo; else noBackendData">
+      <p><strong>Mensaje del API:</strong> {{ backendInfo.message }}</p>
+      <p><strong>Auth0 User Sub (desde backend):</strong> {{ backendInfo.auth0UserSub }}</p>
+      <details class="mt-2">
+        <summary class="cursor-pointer text-blue-500">Ver Usuario de Base de Datos (JSON)</summary>
+        <pre class="bg-gray-100 p-2 rounded mt-1 text-xs overflow-x-auto"><code>{{ backendInfo.databaseUser | json }}</code></pre>
+      </details>
+    </div>
+    <ng-template #noBackendData>
+      <p *ngIf="!isLoadingBackendUser && !backendUserError" class="text-gray-500">No hay datos del backend para mostrar o aún se están cargando.</p>
+    </ng-template>
+  </div>
+</div>
