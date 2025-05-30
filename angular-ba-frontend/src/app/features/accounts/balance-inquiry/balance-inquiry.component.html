@@ -1,0 +1,73 @@
+<ng-container *ngIf="isAuthenticated$ | async; else loggedOut">
+  <div class="balance-inquiry-page">
+    <header class="ios-header">
+      <h1>Mi Saldo</h1>
+    </header>
+
+    <main>
+      <!-- Balance Form -->
+      <div class="balance-card">
+        <form (ngSubmit)="checkBalance()" class="balance-form">
+          <button
+            type="submit"
+            class="ios-button"
+            [disabled]="isLoading"
+          >
+            <span *ngIf="!isLoading">Consultar Saldo</span>
+            <div *ngIf="isLoading" class="spinner"></div>
+          </button>
+        </form>
+      </div>
+
+      <!-- Loading State -->
+      <div *ngIf="isLoading" class="balance-card loading-indicator">
+        <div class="spinner"></div>
+        <div>Consultando tu saldo...</div>
+      </div>
+
+      <!-- Error Message -->
+      <div *ngIf="errorMessage && !isLoading" class="error-message">
+        <p>{{ errorMessage }}</p>
+      </div>
+
+      <!-- Balance Results -->
+      <div *ngIf="accountBalanceData && !isLoading && !errorMessage" class="balance-card balance-results">
+        <div class="account-header">
+          <h2>Tu Cuenta</h2>
+          <div class="account-number">{{ maskAccountNumber(accountBalanceData.accountNumber) }}</div>
+        </div>
+
+        <div class="balance-display">
+          <div class="balance-label">Saldo Disponible</div>
+          <div class="balance-amount">
+            {{ accountBalanceData.balance | currency:accountBalanceData.currency:'symbol-narrow':'1.2-2' }}
+          </div>
+        </div>
+
+        <div class="account-details">
+          <div class="detail-item">
+            <span class="detail-label">Tipo de Cuenta</span>
+            <span class="detail-value">{{ accountBalanceData.accountType | titlecase }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">Moneda</span>
+            <span class="detail-value">{{ accountBalanceData.currency }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">Estado</span>
+            <span class="detail-value status-badge"
+                  [ngClass]="'status-' + (accountBalanceData.status | lowercase)">
+              {{ accountBalanceData.status | titlecase }}
+            </span>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</ng-container>
+
+<ng-template #loggedOut>
+  <div class="logged-out">
+    <p>Por favor, inicia sesión para consultar tu saldo.</p>
+  </div>
+</ng-template>
