@@ -1,0 +1,129 @@
+<ng-container *ngIf="isAuthenticated$ | async; else loggedOut">
+  <div class="deposit-container">
+    <!-- Header con título principal -->
+    <header class="ios-header">
+      <h1 class="ios-title-large">Realizar Depósito</h1>
+      <p class="ios-subtitle">Ingrese el monto que desea depositar en su cuenta</p>
+    </header>
+
+    <!-- Card principal del formulario -->
+    <main class="deposit-main">
+      <div class="ios-card deposit-card">
+        <form (ngSubmit)="onSubmitDeposit(depositForm)" #depositForm="ngForm" class="deposit-form" novalidate>
+
+          <!-- Input de monto con diseño iOS -->
+          <div class="form-group">
+            <label for="depositAmount" class="ios-label">Monto a Depositar</label>
+            <div class="input-container">
+              <span class="currency-symbol">$</span>
+              <input
+                type="number"
+                id="depositAmount"
+                name="depositAmount"
+                [(ngModel)]="depositAmount"
+                placeholder="0.00"
+                min="0.01"
+                step="0.01"
+                required
+                #amountInput="ngModel"
+                class="ios-input"
+                [ngClass]="{ 'error': depositForm.submitted && amountInput.invalid }"
+              />
+            </div>
+
+            <!-- Mensaje de error con animación -->
+            <div *ngIf="depositForm.submitted && amountInput.invalid" class="error-feedback">
+              <span *ngIf="amountInput.errors?.['required']">El monto es requerido</span>
+              <span *ngIf="amountInput.errors?.['min'] || (amountInput.value !== null && amountInput.value <= 0)">
+                El monto debe ser mayor a cero
+              </span>
+            </div>
+          </div>
+
+          <!-- Botón principal iOS -->
+          <button
+            type="submit"
+            [disabled]="isLoading || !depositForm.valid"
+            class="ios-button deposit-button"
+            [ngClass]="{ 'loading': isLoading }"
+          >
+            <span *ngIf="isLoading" class="spinner"></span>
+            <span class="button-text">{{ isLoading ? 'Procesando...' : 'Confirmar Depósito' }}</span>
+          </button>
+        </form>
+      </div>
+
+      <!-- Card de éxito -->
+      <div *ngIf="successMessage" class="ios-card success-card" [@slideUp]>
+        <div class="success-header">
+          <div class="success-icon">
+            <svg width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+            </svg>
+          </div>
+          <h3 class="ios-title-medium success-title">¡Depósito Exitoso!</h3>
+        </div>
+
+        <p class="success-message">{{ successMessage }}</p>
+
+        <!-- Detalles de la transacción -->
+        <div *ngIf="lastDepositDetails" class="transaction-details">
+          <h4 class="ios-label details-title">Detalles de la Transacción</h4>
+
+          <div class="details-grid">
+            <div class="detail-item">
+              <span class="ios-label">Número de Cuenta</span>
+              <span class="ios-value">{{ lastDepositDetails.accountNumber }}</span>
+            </div>
+
+            <div class="detail-item amount-deposited">
+              <span class="ios-label">Monto Depositado</span>
+              <span class="ios-display-amount">
+                {{ lastDepositDetails.amountDeposited | currency:lastDepositDetails.currency:'symbol':'1.2-2' }}
+              </span>
+            </div>
+
+            <div class="detail-item new-balance">
+              <span class="ios-label">Nuevo Saldo</span>
+              <span class="ios-display-amount balance-highlight">
+                {{ lastDepositDetails.newBalance | currency:lastDepositDetails.currency:'symbol':'1.2-2' }}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card de error -->
+      <div *ngIf="errorMessage" class="error-card" [@slideUp]>
+        <div class="error-header">
+          <div class="error-icon">
+            <svg width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+            </svg>
+          </div>
+          <h3 class="error-title">Error en el Depósito</h3>
+        </div>
+        <p class="error-text">{{ errorMessage }}</p>
+      </div>
+    </main>
+  </div>
+</ng-container>
+
+<ng-template #loggedOut>
+  <div class="logged-out-container">
+    <div class="ios-card logged-out-card">
+      <div class="logged-out-content">
+        <div class="auth-icon">
+          <svg width="48" height="48" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M12 2C13.1 2 14 2.9 14 4C14 5.1 13.1 6 12 6C10.9 6 10 5.1 10 4C10 2.9 10.9 2 12 2ZM21 9V7L15 7C13.9 7 13 7.9 13 9V22H11V16H9V22H7V9C7 7.9 7.9 7 9 7H3V9H1V7C1 5.9 1.9 5 3 5H21C22.1 5 23 5.9 23 7V9H21Z"/>
+          </svg>
+        </div>
+        <h2 class="ios-title-medium">Acceso Requerido</h2>
+        <p class="auth-message">Por favor, inicia sesión para realizar un depósito</p>
+<!--        <button class="ios-button auth-button" (click)="navigateToLogin()">-->
+<!--          Iniciar Sesión-->
+<!--        </button>-->
+      </div>
+    </div>
+  </div>
+</ng-template>
