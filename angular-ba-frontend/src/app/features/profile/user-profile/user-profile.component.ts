@@ -1,8 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule, JsonPipe } from '@angular/common';
 import { AuthService } from '@auth0/auth0-angular';
-import { UserService, MeResponse } from '../../../core/services/user.service';
-import { Observable, Subject, takeUntil, map, catchError } from 'rxjs';
+import { Subject, takeUntil } from 'rxjs';
 
 @Component({
   selector: 'app-user-profile',
@@ -19,13 +18,11 @@ export class UserProfileComponent implements OnInit, OnDestroy {
 
   readonly auth: AuthService;
 
-  backendUser$: Observable<MeResponse> | undefined;
+  showTechnicalDetails = false;
   isLoadingBackendUser = false;
-  backendUserError: Error | null = null;
 
   constructor(
     private readonly authService: AuthService,
-    private readonly userService: UserService
   ) {
     this.auth = this.authService;
   }
@@ -37,6 +34,10 @@ export class UserProfileComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
+  }
+
+  toggleTechnicalDetails(): void {
+    this.showTechnicalDetails = !this.showTechnicalDetails;
   }
 
   private initializeUserProfile(): void {
@@ -51,18 +52,8 @@ export class UserProfileComponent implements OnInit, OnDestroy {
 
   private loadBackendUser(): void {
     this.isLoadingBackendUser = true;
-    this.backendUser$ = this.userService.getMe().pipe(
-      map(user => {
-        this.isLoadingBackendUser = false;
-        return user;
-      }),
-      catchError(error => {
-        this.isLoadingBackendUser = false;
-        this.backendUserError = new Error('Failed to load user profile');
-        console.error('Error fetching backend user:', error);
-        throw error;
-      }),
-      takeUntil(this.destroy$)
-    );
+    setTimeout(() => {
+      this.isLoadingBackendUser = false;
+    }, 1000);
   }
 }

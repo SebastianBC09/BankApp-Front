@@ -1,43 +1,77 @@
-<div class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
-  <h2 class="text-2xl font-bold mb-6 text-gray-800">Perfil de Usuario</h2>
+<div class="profile-container">
+  <header class="profile-header">
+    <h1 class="ios-title-large">Perfil de Usuario</h1>
+  </header>
 
-  <div *ngIf="auth.user$ | async as auth0User" class="mb-6">
-    <h3 class="text-xl font-semibold text-gray-700 mb-2">Datos de Auth0:</h3>
-    <div class="flex items-center mb-2" *ngIf="auth0User.picture">
-      <img [src]="auth0User.picture" alt="Foto de {{ auth0User.name }}" class="rounded-full w-16 h-16 mr-4">
-    </div>
-    <p><strong>Nombre:</strong> {{ auth0User.name }}</p>
-    <p><strong>Email:</strong> {{ auth0User.email }}</p>
-    <p><strong>Sub (Auth0 ID):</strong> {{ auth0User.sub }}</p>
-    <details class="mt-2">
-      <summary class="cursor-pointer text-blue-500">Ver todos los datos de Auth0 (JSON)</summary>
-      <pre class="bg-gray-100 p-2 rounded mt-1 text-xs overflow-x-auto"><code>{{ auth0User | json }}</code></pre>
-    </details>
-  </div>
-  <hr class="my-6">
+  <main class="profile-content">
+    <div class="ios-card profile-card" *ngIf="auth.user$ | async as auth0User">
+      <!-- Foto de perfil y datos principales -->
+      <div class="profile-main-info">
+        <div class="profile-avatar-container" *ngIf="auth0User.picture">
+          <img [src]="auth0User.picture"
+               [alt]="'Foto de ' + auth0User.name"
+               class="profile-avatar">
+          <div class="avatar-ring"></div>
+        </div>
 
-  <div>
-    <h3 class="text-xl font-semibold text-gray-700 mb-2">Datos del Backend (/api/test/me):</h3>
-    <div *ngIf="isLoadingBackendUser" class="text-blue-500">
-      Cargando datos del backend...
+        <div class="profile-identity">
+          <h2 class="profile-name">{{ auth0User.name }}</h2>
+          <p class="profile-email">{{ auth0User.email }}</p>
+        </div>
+      </div>
+
+      <!-- Grid de detalles -->
+      <div class="profile-details">
+        <div class="detail-item">
+          <span class="ios-label">ID de Usuario</span>
+          <span class="ios-value profile-id">{{ auth0User.sub }}</span>
+        </div>
+
+        <div class="detail-item">
+          <span class="ios-label">Estado</span>
+          <div class="status-active">
+            <span>Activo</span>
+          </div>
+        </div>
+
+        <div class="detail-item">
+          <span class="ios-label">Verificado</span>
+          <div class="verification-badge" [class.verified]="auth0User.email_verified">
+            <span>{{ auth0User.email_verified ? 'Verificado' : 'Pendiente' }}</span>
+          </div>
+        </div>
+
+        <div class="detail-item">
+          <span class="ios-label">Última Conexión</span>
+          <span class="ios-value">{{ auth0User.updated_at | date:'dd/MM/yyyy HH:mm' }}</span>
+        </div>
+      </div>
+
+      <!-- Expansión de datos técnicos -->
+      <div class="technical-details">
+        <button class="technical-toggle"
+                (click)="toggleTechnicalDetails()"
+                [class.expanded]="showTechnicalDetails">
+          <span>Datos Técnicos</span>
+          <div class="toggle-icon" [class.rotated]="showTechnicalDetails">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+              <path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+        </button>
+
+        <div class="technical-content" [class.show]="showTechnicalDetails">
+          <div class="json-container">
+            <pre class="json-display"><code>{{ auth0User | json }}</code></pre>
+          </div>
+        </div>
+      </div>
     </div>
 
-    <div *ngIf="backendUserError" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-3" role="alert">
-      <strong class="font-bold">Error:</strong>
-      <span class="block sm:inline">{{ backendUserError.message || 'No se pudieron cargar los datos del backend.'}}</span>
-      <pre class="text-xs mt-2">{{ backendUserError | json }}</pre>
+    <!-- Estado de carga -->
+    <div class="loading-indicator" *ngIf="!(auth.user$ | async) || isLoadingBackendUser">
+      <div class="spinner"></div>
+      <span>{{ isLoadingBackendUser ? 'Cargando datos adicionales...' : 'Cargando perfil...' }}</span>
     </div>
-
-    <div *ngIf="backendUser$ | async as backendInfo; else noBackendData">
-      <p><strong>Mensaje del API:</strong> {{ backendInfo.message }}</p>
-      <p><strong>Auth0 User Sub (desde backend):</strong> {{ backendInfo.auth0UserSub }}</p>
-      <details class="mt-2">
-        <summary class="cursor-pointer text-blue-500">Ver Usuario de Base de Datos (JSON)</summary>
-        <pre class="bg-gray-100 p-2 rounded mt-1 text-xs overflow-x-auto"><code>{{ backendInfo.databaseUser | json }}</code></pre>
-      </details>
-    </div>
-    <ng-template #noBackendData>
-      <p *ngIf="!isLoadingBackendUser && !backendUserError" class="text-gray-500">No hay datos del backend para mostrar o aún se están cargando.</p>
-    </ng-template>
-  </div>
+  </main>
 </div>
