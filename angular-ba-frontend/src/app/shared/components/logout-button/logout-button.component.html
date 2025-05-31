@@ -1,6 +1,9 @@
 <button
+  class="ios-button-secondary"
   (click)="handleLogout()"
-  class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
+  [disabled]="isLoading"
+  [attr.aria-label]="isLoading ? 'Cerrando sesión...' : 'Cerrar Sesión'"
 >
-  Cerrar Sesión
+  <span *ngIf="!isLoading">Cerrar Sesión</span>
+  <div *ngIf="isLoading" class="loading-spinner"></div>
 </button>

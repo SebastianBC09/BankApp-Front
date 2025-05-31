@@ -1,22 +1,33 @@
 import { Component, Inject } from '@angular/core';
 import { AuthService } from '@auth0/auth0-angular';
-import { DOCUMENT } from '@angular/common';
+import {CommonModule, DOCUMENT } from '@angular/common';
 
 @Component({
   selector: 'app-logout-button',
-  imports: [],
+  imports: [CommonModule],
   templateUrl: './logout-button.component.html',
   styleUrl: './logout-button.component.css'
 })
 export class LogoutButtonComponent {
-  constructor(@Inject(DOCUMENT) public document: Document, public auth: AuthService) {}
+  isLoading = false;
 
-  handleLogout(): void {
-    this.auth.logout({
-      logoutParams: {
-        returnTo: this.document.location.origin
-      }
-      }
-    )
+  constructor(
+    @Inject(DOCUMENT) public document: Document,
+    public auth: AuthService
+  ) {}
+
+  async handleLogout(): Promise<void> {
+    try {
+      this.isLoading = true;
+      this.auth.logout({
+        logoutParams: {
+          returnTo: this.document.location.origin
+        }
+      });
+    } catch (error) {
+      console.error('Error during logout:', error);
+    } finally {
+      this.isLoading = false;
+    }
   }
 }
