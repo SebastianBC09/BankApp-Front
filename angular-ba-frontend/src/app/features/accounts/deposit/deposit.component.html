@@ -27,11 +27,12 @@
                 required
                 #amountInput="ngModel"
                 class="ios-input"
-                [ngClass]="{ 'error': depositForm.submitted && amountInput.invalid }"
+                [ngClass]="{
+                  'error': depositForm.submitted && amountInput.invalid}"
               />
             </div>
 
-            <!-- Mensaje de error con animación -->
+            <!-- Validaciones de error -->
             <div *ngIf="depositForm.submitted && amountInput.invalid" class="error-feedback">
               <span *ngIf="amountInput.errors?.['required']">El monto es requerido</span>
               <span *ngIf="amountInput.errors?.['min'] || (amountInput.value !== null && amountInput.value <= 0)">
@@ -50,6 +51,16 @@
             <span *ngIf="isLoading" class="spinner"></span>
             <span class="button-text">{{ isLoading ? 'Procesando...' : 'Confirmar Depósito' }}</span>
           </button>
+
+          <!-- Información de seguridad -->
+          <div class="security-info">
+            <div class="security-icon">
+              <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12,1L3,5V11C3,16.55 6.84,21.74 12,23C17.16,21.74 21,16.55 21,11V5L12,1M12,7C13.4,7 14.8,8.6 14.8,10V11.5C15.4,11.4 16,11.9 16,12.5V16.5C16,17.1 15.6,17.5 15,17.5H9C8.4,17.5 8,17.1 8,16.5V12.5C8,11.9 8.4,11.5 9,11.5V10C9,8.6 10.6,7 12,7M12,8.2C11.2,8.2 10.2,8.7 10.2,10V11.5H13.8V10C13.8,8.7 12.8,8.2 12,8.2Z"/>
+              </svg>
+            </div>
+            <span>Sus transacciones están protegidas con encriptación de grado bancario</span>
+          </div>
         </form>
       </div>
 
@@ -64,8 +75,6 @@
           <h3 class="ios-title-medium success-title">¡Depósito Exitoso!</h3>
         </div>
 
-        <p class="success-message">{{ successMessage }}</p>
-
         <!-- Detalles de la transacción -->
         <div *ngIf="lastDepositDetails" class="transaction-details">
           <h4 class="ios-label details-title">Detalles de la Transacción</h4>
@@ -79,7 +88,7 @@
             <div class="detail-item amount-deposited">
               <span class="ios-label">Monto Depositado</span>
               <span class="ios-display-amount">
-                {{ lastDepositDetails.amountDeposited | currency:lastDepositDetails.currency:'symbol':'1.2-2' }}
+                +{{ lastDepositDetails.amountDeposited | currency:lastDepositDetails.currency:'symbol':'1.2-2' }}
               </span>
             </div>
 
@@ -90,6 +99,18 @@
               </span>
             </div>
           </div>
+
+          <!-- Información adicional -->
+          <div class="additional-info">
+            <div class="info-item">
+              <span class="info-icon">📧</span>
+              <span>Se ha enviado un comprobante a su correo electrónico</span>
+            </div>
+            <div class="info-item">
+              <span class="info-icon">🏦</span>
+              <span>Los fondos están disponibles inmediatamente</span>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -98,7 +119,7 @@
         <div class="error-header">
           <div class="error-icon">
             <svg width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+              <path d="M13,13H11V7H13M13,17H11V15H13M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2Z"/>
             </svg>
           </div>
           <h3 class="error-title">Error en el Depósito</h3>
@@ -120,9 +141,9 @@
         </div>
         <h2 class="ios-title-medium">Acceso Requerido</h2>
         <p class="auth-message">Por favor, inicia sesión para realizar un depósito</p>
-<!--        <button class="ios-button auth-button" (click)="navigateToLogin()">-->
-<!--          Iniciar Sesión-->
-<!--        </button>-->
+        <!--        <button class="ios-button auth-button" (click)="navigateToLogin()">-->
+        <!--          Iniciar Sesión-->
+        <!--        </button>-->
       </div>
     </div>
   </div>
